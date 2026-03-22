@@ -10,7 +10,7 @@
 ## Initial Project Setup (from template)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/nativecampus/base_app/main/install.sh | bash -s your_project_name
+curl -sL https://raw.githubusercontent.com/nativecampus/base_app_v1/main/install.sh | bash -s your_project_name
 ```
 
 This clones the repo, renames all references, installs dependencies, creates databases, runs migrations, builds CSS, and makes an initial commit.

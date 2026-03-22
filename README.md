@@ -23,7 +23,7 @@ Project template for internal Python web applications.
 ## Create a New Project
 
 ```bash
-curl -sL https://raw.githubusercontent.com/nativecampus/base_app/main/install.sh | bash -s my_new_app
+curl -sL https://raw.githubusercontent.com/nativecampus/base_app_v1/main/install.sh | bash -s my_new_app
 ```
 
 This clones the template, renames everything to your project name, installs dependencies, creates databases, runs migrations, builds CSS, and makes an initial git commit.

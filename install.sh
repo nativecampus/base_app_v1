@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="nativecampus/base_app"
+REPO="nativecampus/base_app_v1"
 
 usage() {
     echo "Usage: curl -sL https://raw.githubusercontent.com/$REPO/main/install.sh | bash -s <project_name>"
