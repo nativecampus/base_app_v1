@@ -80,6 +80,7 @@ def cmd_init(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     names = init_project.rename_project(args.name)
+    init_project.reset_docs(_ROOT, names)
 
     if not args.no_db:
         print("\n→ Creating databases")

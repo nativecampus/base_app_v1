@@ -129,6 +129,7 @@ class TestCmdInit:
 
         mock_ip.validate_name.assert_called_once_with("my_app")
         mock_ip.rename_project.assert_called_once_with("my_app")
+        mock_ip.reset_docs.assert_called_once()
         mock_ip.create_databases.assert_called_once_with("my_app")
         deps.assert_called_once()
         migrate.assert_called_once()
