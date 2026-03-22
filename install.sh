@@ -38,7 +38,7 @@ echo "Creating $name..."
 
 git clone --quiet "git@github.com:$REPO.git" "$name"
 cd "$name"
-rm -rf .git .claude .coderabbit.yaml install.sh
+rm -rf .git install.sh
 git init --quiet
 
 python3 manage.py init "$name"
