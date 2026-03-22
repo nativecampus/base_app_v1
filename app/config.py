@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     AUTH_ENABLED: bool = False
     CURRENT_USER: str = "system"
     REDIS_URL: str = ""
+    AUTH0_DOMAIN: str = ""
+    AUTH0_CLIENT_ID: str = ""
+    AUTH0_CLIENT_SECRET: str = ""
+    AUTH0_SECRET_KEY: str = ""
 
     class Config:
         env_file = ".env"
