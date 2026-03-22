@@ -10,10 +10,18 @@
 ## Initial Project Setup (from template)
 
 ```bash
+curl -sL https://raw.githubusercontent.com/nativecampus/base_app/main/install.sh | bash -s your_project_name
+```
+
+This clones the repo, renames all references, creates databases, installs dependencies, runs migrations, and builds CSS.
+
+To run the scaffolding step separately (e.g. if you already cloned manually):
+
+```bash
 pipenv run python -m scripts.init_project your_project_name
 ```
 
-This renames all references throughout the codebase and offers to create databases.
+Pass `--yes` to skip the database creation prompt.
 
 ## Setup
 

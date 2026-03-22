@@ -69,7 +69,7 @@ def apply_replacements(
         f.write(content)
 
 
-def run(name: str) -> None:
+def run(name: str, *, auto_yes: bool = False) -> None:
     names = derive_names(name)
 
     print(f"Renaming project to: {names['display']} ({names['snake']})")
@@ -83,8 +83,11 @@ def run(name: str) -> None:
         print(f"  {relpath}")
 
     print()
-    print(f"Create databases now? (createdb {names['snake']} && createdb -U test {names['snake']}_test)")
-    answer = input("[Y/n] ").strip().lower()
+    if auto_yes:
+        answer = "y"
+    else:
+        print(f"Create databases now? (createdb {names['snake']} && createdb -U test {names['snake']}_test)")
+        answer = input("[Y/n] ").strip().lower()
     if answer in ("", "y", "yes"):
         for cmd in [
             ["createdb", names["snake"]],
@@ -106,18 +109,22 @@ def run(name: str) -> None:
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python -m scripts.init_project <project_name>")
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
+    flags = {a for a in sys.argv[1:] if a.startswith("-")}
+
+    if len(args) != 1:
+        print("Usage: python -m scripts.init_project [--yes] <project_name>")
         print("  project_name: snake_case (e.g. email_reviewer)")
+        print("  --yes: skip confirmation prompts")
         sys.exit(1)
 
-    name = sys.argv[1]
+    name = args[0]
     error = validate_name(name)
     if error:
         print(f"Error: {error}")
         sys.exit(1)
 
-    run(name)
+    run(name, auto_yes="--yes" in flags)
 
 
 if __name__ == "__main__":

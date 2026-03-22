@@ -35,23 +35,11 @@ pipenv run uvicorn app.main:app --reload --port 8000
 
 ## Using as a Template
 
-Clone and reset history:
-
 ```bash
-git clone git@github.com:nativecampus/base_app.git my_new_app && cd my_new_app && rm -rf .git && git init
+curl -sL https://raw.githubusercontent.com/nativecampus/base_app/main/install.sh | bash -s my_new_app
 ```
 
-Run the scaffolding script (renames everything, creates databases):
-
-```bash
-pipenv run python -m scripts.init_project my_new_app
-```
-
-Install and go:
-
-```bash
-pipenv install --dev && npm install && npm run build:css && pipenv run alembic upgrade head
-```
+This clones the repo, renames everything, creates databases, installs dependencies, runs migrations, and builds CSS.
 
 Then add your models in `app/models/`, schemas in `app/schemas/`, services in `app/services/`, routes in `app/routers/`, and generate your first migration with `pipenv run alembic revision --autogenerate -m "initial tables"`.
 

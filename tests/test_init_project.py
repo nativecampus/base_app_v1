@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+from unittest.mock import patch, call
 
 import pytest
 
@@ -9,6 +10,8 @@ from scripts.init_project import (
     validate_name,
     REPLACEMENTS,
     apply_replacements,
+    main,
+    run,
 )
 
 
@@ -101,3 +104,62 @@ class TestApplyReplacements:
         names = derive_names("scraper")
         apply_replacements(str(f), [("base_app", "snake")], names)
         assert f.read_text() == "scraper and scraper again\n"
+
+
+class TestRunAutoYes:
+    @patch("scripts.init_project.subprocess.run")
+    @patch("scripts.init_project.os.path.isfile", return_value=False)
+    def test_auto_yes_skips_prompt_and_creates_databases(self, mock_isfile, mock_run):
+        """--yes flag should create databases without prompting."""
+        run("test_proj", auto_yes=True)
+        assert mock_run.call_count == 2
+        mock_run.assert_any_call(["createdb", "test_proj"], check=True)
+        mock_run.assert_any_call(["createdb", "-U", "test", "test_proj_test"], check=True)
+
+    @patch("scripts.init_project.subprocess.run")
+    @patch("scripts.init_project.os.path.isfile", return_value=False)
+    @patch("builtins.input", return_value="n")
+    def test_without_auto_yes_prompts_user(self, mock_input, mock_isfile, mock_run):
+        """Without --yes, the user is prompted and can decline."""
+        run("test_proj", auto_yes=False)
+        mock_input.assert_called_once()
+        mock_run.assert_not_called()
+
+    @patch("scripts.init_project.subprocess.run")
+    @patch("scripts.init_project.os.path.isfile", return_value=False)
+    @patch("builtins.input", return_value="")
+    def test_without_auto_yes_default_is_yes(self, mock_input, mock_isfile, mock_run):
+        """Without --yes, pressing Enter (empty input) defaults to creating databases."""
+        run("test_proj", auto_yes=False)
+        mock_input.assert_called_once()
+        assert mock_run.call_count == 2
+
+
+class TestMainArgParsing:
+    @patch("scripts.init_project.run")
+    def test_yes_flag_before_name(self, mock_run):
+        with patch("sys.argv", ["init_project", "--yes", "my_app"]):
+            main()
+        mock_run.assert_called_once_with("my_app", auto_yes=True)
+
+    @patch("scripts.init_project.run")
+    def test_yes_flag_after_name(self, mock_run):
+        with patch("sys.argv", ["init_project", "my_app", "--yes"]):
+            main()
+        mock_run.assert_called_once_with("my_app", auto_yes=True)
+
+    @patch("scripts.init_project.run")
+    def test_no_flag(self, mock_run):
+        with patch("sys.argv", ["init_project", "my_app"]):
+            main()
+        mock_run.assert_called_once_with("my_app", auto_yes=False)
+
+    def test_no_args_exits(self):
+        with patch("sys.argv", ["init_project"]):
+            with pytest.raises(SystemExit):
+                main()
+
+    def test_invalid_name_exits(self):
+        with patch("sys.argv", ["init_project", "Bad-Name"]):
+            with pytest.raises(SystemExit):
+                main()
