@@ -29,23 +29,11 @@ This starts uvicorn with auto-reload and the CSS watcher.
 
 ## Using as a Template
 
-Clone and reset history:
-
 ```bash
-git clone git@github.com:nativecampus/base_app.git my_new_app && cd my_new_app && rm -rf .git && git init
+curl -sL https://raw.githubusercontent.com/nativecampus/base_app/main/install.sh | bash -s my_new_app
 ```
 
-Initialise the project (renames everything, installs deps, creates databases, runs migrations, builds CSS):
-
-```bash
-python manage.py init my_new_app
-```
-
-Skip database creation (CI or headless environments):
-
-```bash
-python manage.py init my_new_app --no-db
-```
+This clones the repo, renames everything, installs dependencies, creates databases, runs migrations, builds CSS, and makes an initial commit.
 
 Then add your models in `app/models/`, schemas in `app/schemas/`, services in `app/services/`, routes in `app/routers/`, and generate your first migration with `pipenv run alembic revision --autogenerate -m "initial tables"`.
 
