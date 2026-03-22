@@ -18,38 +18,52 @@ This renames all references throughout the codebase and offers to create databas
 ## Setup
 
 ```bash
-pipenv install --dev
-npm install
-pipenv run alembic upgrade head
-npm run build:css
+pipenv install --dev && npm install && pipenv run alembic upgrade head && npm run build:css
 ```
 
 ## Running
 
+Development server with auto-reload:
+
 ```bash
-# Development server with auto-reload
 pipenv run uvicorn app.main:app --reload --port 8000
+```
 
-# CSS watcher (separate terminal)
+CSS watcher (separate terminal):
+
+```bash
 npm run watch:css
+```
 
-# RQ worker (if using Redis)
+RQ worker (if using Redis):
+
+```bash
 pipenv run rq worker --url $REDIS_URL base-app
+```
 
-# macOS requires SimpleWorker to avoid fork() crashes
+macOS requires SimpleWorker to avoid fork() crashes:
+
+```bash
 pipenv run rq worker --worker-class rq.SimpleWorker --url $REDIS_URL base-app
 ```
 
 ## Testing
 
+Create test database (once):
+
 ```bash
-# Create test database (once)
 createdb -U test base_app_test
+```
 
-# Run tests
+Run tests:
+
+```bash
 pipenv run python -m pytest
+```
 
-# With verbose output
+Verbose output:
+
+```bash
 pipenv run python -m pytest -v
 ```
 
@@ -57,32 +71,54 @@ Test database credentials: `test:test` on `localhost:5432/base_app_test`.
 
 ## Database Migrations
 
+Apply all pending migrations:
+
 ```bash
-# Apply all pending migrations
 pipenv run alembic upgrade head
+```
 
-# Generate migration from model changes
+Generate migration from model changes:
+
+```bash
 pipenv run alembic revision --autogenerate -m "description of change"
+```
 
-# Rollback one migration
+Rollback one migration:
+
+```bash
 pipenv run alembic downgrade -1
+```
 
-# Show current migration state
+Show current migration state:
+
+```bash
 pipenv run alembic current
 ```
 
 ## Seeding
 
+Seed all data:
+
 ```bash
-# Seed all data
 pipenv run python -m scripts.seed_all
+```
 
-# Seed specific data
+Seed specific data:
+
+```bash
 pipenv run python -m scripts.seed_all --only settings
+```
 
-# Reset database (drops and recreates all tables)
+Reset database (drops and recreates all tables):
+
+```bash
 pipenv run python -m scripts.db_reset
-pipenv run python -m scripts.db_reset --yes  # skip confirmation
+```
+
+Skip confirmation:
+
+```bash
+pipenv run python -m scripts.db_reset --yes
 ```
 
 ## Deployment

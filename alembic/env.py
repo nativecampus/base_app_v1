@@ -1,4 +1,5 @@
 import asyncio
+import os
 import re
 from logging.config import fileConfig
 
@@ -14,14 +15,23 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 
+def _get_url() -> str:
+    """Return DATABASE_URL from the environment, falling back to alembic.ini."""
+    url = os.environ.get("DATABASE_URL") or config.get_main_option("sqlalchemy.url")
+    if not url:
+        raise RuntimeError(
+            "Database URL is not configured. Set DATABASE_URL or sqlalchemy.url in alembic.ini."
+        )
+    return url
+
+
 def _to_async_url(url: str) -> str:
     return re.sub(r"^postgresql(\+psycopg2)?://", "postgresql+asyncpg://", url)
 
 
 def run_migrations_offline() -> None:
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=_get_url(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -37,8 +47,7 @@ def do_run_migrations(connection):
 
 
 async def run_async_migrations() -> None:
-    url = config.get_main_option("sqlalchemy.url")
-    connectable = create_async_engine(_to_async_url(url))
+    connectable = create_async_engine(_to_async_url(_get_url()))
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
     await connectable.dispose()
