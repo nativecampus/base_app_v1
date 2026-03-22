@@ -154,6 +154,7 @@ def create_databases(db_name: str, test_user: str = "test") -> None:
 
 def run(name: str) -> None:
     names = rename_project(name)
+    reset_docs(_REPO_ROOT, names)
 
     print()
     print(f"Create databases now? (createdb {names['snake']} && createdb -U test {names['snake']}_test)")
