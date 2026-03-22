@@ -1,5 +1,3 @@
-import os
-
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
@@ -14,8 +12,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 @app.middleware("http")
 async def set_audit_user(request: Request, call_next):
-    user = os.getenv("CURRENT_USER", "system")
-    token = set_current_user(user)
+    """Populate the audit context var with the configured user for each request."""
+    token = set_current_user(settings.CURRENT_USER)
     try:
         response = await call_next(request)
     finally:
@@ -28,4 +26,5 @@ app.include_router(pages.router)
 
 @app.get("/health")
 async def health():
+    """Return a simple health check response."""
     return {"status": "healthy"}

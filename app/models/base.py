@@ -14,6 +14,7 @@ def set_current_user(user: str):
 
 
 def _current_user():
+    """Return the current user from the context var for column defaults."""
     return _current_user_var.get()
 
 
@@ -39,5 +40,6 @@ class AuditMixin:
 
 @event.listens_for(Base, "before_update", propagate=True)
 def _set_updated_by(mapper, connection, target):
+    """Set updated_by to the current user before any AuditMixin update."""
     if isinstance(target, AuditMixin):
         target.updated_by = _current_user_var.get()
