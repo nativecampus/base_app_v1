@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 async def _run_with_error_handling(job_id: int, runner, **kwargs):
-    """Run an async job runner, recording failure on unhandled exceptions."""
+    """Run an async job runner, logging and re-raising unhandled exceptions."""
     try:
         await runner(job_id=job_id, **kwargs)
     except Exception as exc:

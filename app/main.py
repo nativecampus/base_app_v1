@@ -1,5 +1,3 @@
-import os
-
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
@@ -14,8 +12,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 @app.middleware("http")
 async def set_audit_user(request: Request, call_next):
-    user = os.getenv("CURRENT_USER", "system")
-    token = set_current_user(user)
+    token = set_current_user(settings.CURRENT_USER)
     try:
         response = await call_next(request)
     finally:

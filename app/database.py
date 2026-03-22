@@ -1,4 +1,5 @@
 import re
+from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -26,6 +27,7 @@ def _create_engine(url: str):
     return create_async_engine(_to_async_url(url))
 
 
+@asynccontextmanager
 async def worker_session():
     """Create a standalone session for background workers.
 
