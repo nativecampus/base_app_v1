@@ -70,6 +70,55 @@ def apply_replacements(
         f.write(content)
 
 
+def reset_docs(repo_root: str, names: dict[str, str]) -> None:
+    """Rewrite README and strip template sections from docs for a scaffolded project."""
+    readme_path = os.path.join(repo_root, "README.md")
+    with open(readme_path, "w") as f:
+        f.write(f"""# {names['display']}
+
+## Quick Start
+
+```bash
+python manage.py dev
+```
+
+Your app is running at `http://localhost:8000`.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Web framework | FastAPI (async) |
+| Database | PostgreSQL + async SQLAlchemy + Alembic |
+| Templates | Jinja2 + Tailwind CSS v4 |
+| Background jobs | Redis + RQ (optional — falls back to in-process) |
+| Testing | pytest + pytest-asyncio |
+| Deployment | Heroku (Procfile) |
+
+## Documentation
+
+See `docs/` for architecture, coding standards, and testing guidance.
+""")
+
+    dev_md_path = os.path.join(repo_root, "docs", "development.md")
+    if os.path.isfile(dev_md_path):
+        with open(dev_md_path) as f:
+            content = f.read()
+        lines = content.split("\n")
+        result = []
+        skip = False
+        for line in lines:
+            if line.startswith("## Initial Project Setup"):
+                skip = True
+                continue
+            if skip and line.startswith("## "):
+                skip = False
+            if not skip:
+                result.append(line)
+        with open(dev_md_path, "w") as f:
+            f.write("\n".join(result))
+
+
 def rename_project(name: str) -> dict[str, str]:
     """Rename all base_app references throughout the codebase. Returns derived names."""
     names = derive_names(name)
@@ -105,6 +154,7 @@ def create_databases(db_name: str, test_user: str = "test") -> None:
 
 def run(name: str) -> None:
     names = rename_project(name)
+    reset_docs(_REPO_ROOT, names)
 
     print()
     print(f"Create databases now? (createdb {names['snake']} && createdb -U test {names['snake']}_test)")

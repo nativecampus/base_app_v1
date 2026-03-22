@@ -11,6 +11,7 @@ from scripts.init_project import (
     apply_replacements,
     rename_project,
     create_databases,
+    reset_docs,
 )
 
 
@@ -103,3 +104,78 @@ class TestApplyReplacements:
         names = derive_names("scraper")
         apply_replacements(str(f), [("base_app", "snake")], names)
         assert f.read_text() == "scraper and scraper again\n"
+
+
+class TestResetDocs:
+    def test_readme_uses_project_name(self, tmp_path):
+        readme = tmp_path / "README.md"
+        readme.write_text("old content")
+        names = derive_names("email_reviewer")
+        reset_docs(str(tmp_path), names)
+        content = readme.read_text()
+        assert "# Email Reviewer" in content
+        assert "base_app" not in content
+        assert "install.sh" not in content
+        assert "template" not in content.lower().replace("templates", "")
+
+    def test_readme_has_dev_command(self, tmp_path):
+        readme = tmp_path / "README.md"
+        readme.write_text("old content")
+        names = derive_names("email_reviewer")
+        reset_docs(str(tmp_path), names)
+        content = readme.read_text()
+        assert "python manage.py dev" in content
+
+    def test_readme_has_tech_stack(self, tmp_path):
+        readme = tmp_path / "README.md"
+        readme.write_text("old content")
+        names = derive_names("email_reviewer")
+        reset_docs(str(tmp_path), names)
+        content = readme.read_text()
+        assert "FastAPI" in content
+
+    def test_development_md_no_template_section(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        dev_md = docs / "development.md"
+        dev_md.write_text(
+            "# Development\n\n"
+            "## Prerequisites\n\n- Python 3.12\n\n"
+            "## Initial Project Setup (from template)\n\n"
+            "```bash\ncurl -sL https://example.com/install.sh | bash -s foo\n```\n\n"
+            "This clones the repo.\n\n"
+            "To run just the init step separately (e.g. if you already cloned manually):\n\n"
+            "```bash\npython manage.py init foo\n```\n\n"
+            "## Setup\n\n```bash\npython manage.py setup\n```\n"
+        )
+        names = derive_names("email_reviewer")
+        reset_docs(str(tmp_path), names)
+        content = dev_md.read_text()
+        assert "## Prerequisites" in content
+        assert "## Setup" in content
+        assert "Initial Project Setup (from template)" not in content
+        assert "install.sh" not in content
+
+    def test_development_md_preserves_other_sections(self, tmp_path):
+        docs = tmp_path / "docs"
+        docs.mkdir()
+        dev_md = docs / "development.md"
+        dev_md.write_text(
+            "# Development\n\n"
+            "## Prerequisites\n\n- Python 3.12\n\n"
+            "## Initial Project Setup (from template)\n\ntemplate stuff\n\n"
+            "## Setup\n\nsetup stuff\n\n"
+            "## Running\n\nrunning stuff\n"
+        )
+        names = derive_names("email_reviewer")
+        reset_docs(str(tmp_path), names)
+        content = dev_md.read_text()
+        assert "## Running" in content
+        assert "running stuff" in content
+
+    def test_skips_missing_development_md(self, tmp_path):
+        readme = tmp_path / "README.md"
+        readme.write_text("old")
+        names = derive_names("scraper")
+        reset_docs(str(tmp_path), names)
+        assert readme.read_text() != "old"
