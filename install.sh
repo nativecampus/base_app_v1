@@ -41,7 +41,7 @@ cd "$name"
 rm -rf .git .claude .coderabbit.yaml install.sh
 git init --quiet
 
-pipenv run python -m scripts.init_project --yes "$name"
+python3 -m scripts.init_project --yes "$name"
 pipenv install --dev
 npm install
 pipenv run alembic upgrade head
