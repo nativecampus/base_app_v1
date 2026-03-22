@@ -1,6 +1,6 @@
 # Base App
 
-A batteries-included project template for internal Python web applications. Scaffolds a complete async FastAPI application with database, migrations, background jobs, templating, and CI — ready to build on.
+Project template for internal Python web applications.
 
 ## What You Get
 
