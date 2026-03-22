@@ -64,7 +64,7 @@ Add `make_*` factory fixtures as you add models. Each factory should accept keyw
 
 ## Running Tests
 
-Default (coverage, max 3 failures):
+Default (coverage and max 3 failures are configured in `pytest.ini`):
 
 ```bash
 pipenv run python -m pytest

@@ -17,7 +17,12 @@ target_metadata = Base.metadata
 
 def _get_url() -> str:
     """Return DATABASE_URL from the environment, falling back to alembic.ini."""
-    return os.environ.get("DATABASE_URL") or config.get_main_option("sqlalchemy.url")
+    url = os.environ.get("DATABASE_URL") or config.get_main_option("sqlalchemy.url")
+    if not url:
+        raise RuntimeError(
+            "Database URL is not configured. Set DATABASE_URL or sqlalchemy.url in alembic.ini."
+        )
+    return url
 
 
 def _to_async_url(url: str) -> str:
