@@ -10,29 +10,25 @@
 ## Initial Project Setup (from template)
 
 ```bash
-pipenv run python -m scripts.init_project your_project_name
+python manage.py init your_project_name
 ```
 
-This renames all references throughout the codebase and offers to create databases.
+This renames all references, installs dependencies, creates databases, runs migrations, and builds CSS.
 
 ## Setup
 
 ```bash
-pipenv install --dev && npm install && pipenv run alembic upgrade head && npm run build:css
+python manage.py setup
 ```
+
+This installs dependencies, creates both the main and test databases, runs migrations, and builds CSS.
 
 ## Running
 
-Development server with auto-reload:
+Dev server with auto-reload and CSS watcher:
 
 ```bash
-pipenv run uvicorn app.main:app --reload --port 8000
-```
-
-CSS watcher (separate terminal):
-
-```bash
-npm run watch:css
+python manage.py dev
 ```
 
 RQ worker (if using Redis):
@@ -49,7 +45,7 @@ pipenv run rq worker --worker-class rq.SimpleWorker --url $REDIS_URL base-app
 
 ## Testing
 
-Create test database (once):
+The test database is created automatically by `manage.py setup` and `manage.py init`. To create it manually:
 
 ```bash
 createdb -U test base_app_test

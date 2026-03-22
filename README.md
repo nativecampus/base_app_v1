@@ -15,23 +15,17 @@ Template for internal Python web applications. Clone this repo as the starting p
 
 ## Quick Start
 
-Install dependencies:
-
 ```bash
-pipenv install --dev && npm install
+python manage.py setup
 ```
 
-Create database and build CSS:
+This installs dependencies, creates the database, runs migrations, and builds CSS.
 
 ```bash
-createdb base_app && pipenv run alembic upgrade head && npm run build:css
+python manage.py dev
 ```
 
-Run:
-
-```bash
-pipenv run uvicorn app.main:app --reload --port 8000
-```
+This starts uvicorn with auto-reload and the CSS watcher.
 
 ## Using as a Template
 
@@ -41,16 +35,16 @@ Clone and reset history:
 git clone git@github.com:nativecampus/base_app.git my_new_app && cd my_new_app && rm -rf .git && git init
 ```
 
-Run the scaffolding script (renames everything, creates databases):
+Initialise the project (renames everything, installs deps, creates databases, runs migrations, builds CSS):
 
 ```bash
-pipenv run python -m scripts.init_project my_new_app
+python manage.py init my_new_app
 ```
 
-Install and go:
+Skip database creation (CI or headless environments):
 
 ```bash
-pipenv install --dev && npm install && npm run build:css && pipenv run alembic upgrade head
+python manage.py init my_new_app --no-db
 ```
 
 Then add your models in `app/models/`, schemas in `app/schemas/`, services in `app/services/`, routes in `app/routers/`, and generate your first migration with `pipenv run alembic revision --autogenerate -m "initial tables"`.
