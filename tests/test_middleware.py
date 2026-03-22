@@ -17,4 +17,4 @@ async def test_audit_user_middleware_uses_settings(client):
         with patch("app.main.set_current_user", side_effect=spy):
             await client.get("/health")
 
-    assert "from-settings" in captured
+    assert captured == ["from-settings"]
