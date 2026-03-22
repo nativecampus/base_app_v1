@@ -32,6 +32,7 @@ REPLACEMENTS: list[tuple[str, list[tuple[str, str]]]] = [
     (".github/workflows/ci.yml", [("base_app", "snake")]),
     ("package.json", [("base_app", "snake")]),
     ("manage.py", [("base_app", "snake")]),
+    ("tests/test_manage.py", [("base_app", "snake")]),
 ]
 
 

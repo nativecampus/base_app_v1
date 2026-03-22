@@ -166,7 +166,7 @@ class TestCmdInit:
 
     def test_invalid_name_exits(self):
         with pytest.raises(SystemExit) as exc:
-            args = build_parser().parse_args(["init", "base_app"])
+            args = build_parser().parse_args(["init", "0bad"])
             cmd_init(args)
         assert exc.value.code == 1
 
