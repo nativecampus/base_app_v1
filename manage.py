@@ -24,39 +24,51 @@ def _run(cmd: list[str] | str, label: str, shell: bool = False) -> bool:
         print(f"  SKIP: command not found ({cmd[0] if isinstance(cmd, list) else cmd})")
         return False
     except subprocess.CalledProcessError:
-        print(f"  FAILED")
+        print("  FAILED")
         return False
 
 
-def _install_deps() -> None:
-    _run(["pipenv", "install", "--dev"], "Installing Python dependencies")
-    _run(["npm", "install"], "Installing npm dependencies")
+def _install_deps() -> bool:
+    return (
+        _run(["pipenv", "install", "--dev"], "Installing Python dependencies")
+        and _run(["npm", "install"], "Installing npm dependencies")
+    )
 
 
 def _create_databases(db_name: str) -> None:
-    print(f"\n→ Creating databases")
+    print("\n→ Creating databases")
     init_project.create_databases(db_name)
 
 
-def _run_migrations() -> None:
-    _run(["pipenv", "run", "alembic", "upgrade", "head"], "Running migrations")
+def _run_migrations() -> bool:
+    return _run(["pipenv", "run", "alembic", "upgrade", "head"], "Running migrations")
 
 
-def _build_css() -> None:
-    _run(["npm", "run", "build:css"], "Building CSS")
+def _build_css() -> bool:
+    return _run(["npm", "run", "build:css"], "Building CSS")
 
 
-def _install_wizard() -> None:
-    _run(WIZARD_INSTALL, "Installing wizard skill", shell=True)
+def _install_wizard() -> bool:
+    return _run(WIZARD_INSTALL, "Installing wizard skill", shell=True)
+
+
+def _run_steps() -> bool:
+    """Run the common setup steps. Returns False if any step fails."""
+    if not _install_deps():
+        return False
+    if not _run_migrations():
+        return False
+    if not _build_css():
+        return False
+    _install_wizard()
+    return True
 
 
 def cmd_setup(_args: argparse.Namespace) -> None:
     """Set up the dev environment for working on the template itself."""
-    _install_deps()
     _create_databases("base_app")
-    _run_migrations()
-    _build_css()
-    _install_wizard()
+    if not _run_steps():
+        sys.exit(1)
     print("\n✓ Setup complete. Run: python manage.py dev")
 
 
@@ -70,13 +82,11 @@ def cmd_init(args: argparse.Namespace) -> None:
     names = init_project.rename_project(args.name)
 
     if not args.no_db:
-        print(f"\n→ Creating databases")
+        print("\n→ Creating databases")
         init_project.create_databases(names["snake"])
 
-    _install_deps()
-    _run_migrations()
-    _build_css()
-    _install_wizard()
+    if not _run_steps():
+        sys.exit(1)
 
     print(f"\n✓ {names['display']} is ready. Run: python manage.py dev")
 

@@ -21,7 +21,7 @@ This renames all references, installs dependencies, creates databases, runs migr
 python manage.py setup
 ```
 
-This installs dependencies, creates the database, runs migrations, and builds CSS.
+This installs dependencies, creates both the main and test databases, runs migrations, and builds CSS.
 
 ## Running
 

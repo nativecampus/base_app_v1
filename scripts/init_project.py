@@ -94,10 +94,13 @@ def create_databases(db_name: str, test_user: str = "test") -> None:
         ["createdb", "-U", test_user, f"{db_name}_test"],
     ]:
         try:
-            subprocess.run(cmd, check=True)
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
             print(f"  Created: {cmd[-1]}")
-        except subprocess.CalledProcessError:
-            print(f"  Already exists or failed: {cmd[-1]}")
+        except subprocess.CalledProcessError as exc:
+            if "already exists" in (exc.stderr or ""):
+                print(f"  Already exists: {cmd[-1]}")
+            else:
+                raise RuntimeError(f"Failed to create database {cmd[-1]}") from exc
 
 
 def run(name: str) -> None:

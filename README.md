@@ -41,6 +41,12 @@ Initialise the project (renames everything, installs deps, creates databases, ru
 python manage.py init my_new_app
 ```
 
+Skip database creation (CI or headless environments):
+
+```bash
+python manage.py init my_new_app --no-db
+```
+
 Then add your models in `app/models/`, schemas in `app/schemas/`, services in `app/services/`, routes in `app/routers/`, and generate your first migration with `pipenv run alembic revision --autogenerate -m "initial tables"`.
 
 ## Documentation
