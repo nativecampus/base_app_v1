@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: base_app_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pipenv
+        run: pip install pipenv
+
+      - name: Install dependencies
+        run: pipenv install --dev --deploy
+
+      - name: Run migrations
+        run: pipenv run alembic upgrade head
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/base_app_test
+
+      - name: Run tests
+        run: pipenv run python -m pytest
+        env:
+          DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/base_app_test
+          AUTH_ENABLED: "FALSE"
+          CURRENT_USER: test
+          REDIS_URL: ""

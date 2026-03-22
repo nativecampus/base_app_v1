@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ app_name | default("Base App") }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ static_url('css/tailwind.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <nav class="bg-white border-b border-gray-200 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <span class="font-semibold text-lg">{{ app_name | default("Base App") }}</span>
+                <div class="flex gap-1">
+                    {% block nav_items %}
+                    <a href="/" class="nav-link {{ 'active' if active_nav == 'home' else '' }}">Home</a>
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+                {% block nav_right %}{% endblock %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-gray-200 px-6 py-4 text-center text-xs text-gray-400">
+        {% block footer %}{% endblock %}
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
