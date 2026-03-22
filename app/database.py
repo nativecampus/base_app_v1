@@ -34,6 +34,13 @@ def _get_worker_engine():
     return _worker_engine_ref[0]
 
 
+async def dispose_worker_engine() -> None:
+    """Dispose the shared worker engine if it exists."""
+    if _worker_engine_ref:
+        engine = _worker_engine_ref.pop()
+        await engine.dispose()
+
+
 @asynccontextmanager
 async def worker_session():
     """Create a standalone session for background workers.

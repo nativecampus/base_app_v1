@@ -132,7 +132,7 @@ Auth is disabled by default. To enable:
 3. Set the logout URL to `http://localhost:8000`
 4. Add the following to `.env`:
 
-```
+```dotenv
 AUTH_ENABLED=TRUE
 AUTH0_DOMAIN=your-tenant.auth0.com
 AUTH0_CLIENT_ID=your-client-id
@@ -140,7 +140,7 @@ AUTH0_CLIENT_SECRET=your-client-secret
 AUTH0_SECRET_KEY=a-random-secret-for-session-cookies
 ```
 
-When enabled, unauthenticated requests to protected routes redirect to `/auth/login`. The authenticated user's email is used for audit trail columns (`created_by`, `updated_by`).
+When enabled, unauthenticated requests to protected routes redirect to `/auth/login`. Audit trail columns (`created_by`, `updated_by`) use the authenticated user's `email`, falling back to `name`, then `CURRENT_USER` if neither is available.
 
 ## Deployment
 

@@ -9,7 +9,7 @@ GET /health
 
 ## Authentication (when AUTH_ENABLED=true)
 
-```
+```text
 GET /auth/login     → Redirects to Auth0 login page
 GET /auth/callback  → Auth0 callback, stores user in session, redirects to /
 GET /auth/logout    → Clears session, redirects to Auth0 logout
