@@ -16,6 +16,8 @@ python-dotenv = "*"
 httpx = "*"
 redis = "*"
 rq = "*"
+authlib = "*"
+itsdangerous = "*"
 
 [dev-packages]
 pytest = "*"

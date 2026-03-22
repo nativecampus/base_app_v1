@@ -22,9 +22,23 @@ async def get_db():
         yield session
 
 
-def _create_engine(url: str):
-    """Create a new async engine — used by workers that need their own event loop."""
-    return create_async_engine(_to_async_url(url))
+_worker_engine_ref: list = []
+
+
+def _get_worker_engine():
+    """Return a shared engine for background workers, creating it on first use."""
+    if not _worker_engine_ref:
+        _worker_engine_ref.append(
+            create_async_engine(_to_async_url(settings.DATABASE_URL))
+        )
+    return _worker_engine_ref[0]
+
+
+async def dispose_worker_engine() -> None:
+    """Dispose the shared worker engine if it exists."""
+    if _worker_engine_ref:
+        engine = _worker_engine_ref.pop()
+        await engine.dispose()
 
 
 @asynccontextmanager
@@ -32,13 +46,11 @@ async def worker_session():
     """Create a standalone session for background workers.
 
     Workers run in a separate process/event loop, so they need their own engine.
+    The engine is lazily created and reused across calls within the same process.
     """
-    worker_engine = _create_engine(settings.DATABASE_URL)
+    worker_engine = _get_worker_engine()
     factory = async_sessionmaker(
         worker_engine, class_=AsyncSession, expire_on_commit=False
     )
-    try:
-        async with factory() as session:
-            yield session
-    finally:
-        await worker_engine.dispose()
+    async with factory() as session:
+        yield session
