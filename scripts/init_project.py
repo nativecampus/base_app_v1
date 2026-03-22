@@ -79,10 +79,6 @@ def reset_docs(repo_root: str, names: dict[str, str]) -> None:
 ## Quick Start
 
 ```bash
-python manage.py setup
-```
-
-```bash
 python manage.py dev
 ```
 
