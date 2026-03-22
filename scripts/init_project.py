@@ -31,6 +31,7 @@ REPLACEMENTS: list[tuple[str, list[tuple[str, str]]]] = [
     ("app/templates/index.html", [("base app", "display_lower")]),
     (".github/workflows/ci.yml", [("base_app", "snake")]),
     ("package.json", [("base_app", "snake")]),
+    ("manage.py", [("base_app", "snake")]),
 ]
 
 
@@ -69,7 +70,8 @@ def apply_replacements(
         f.write(content)
 
 
-def run(name: str) -> None:
+def rename_project(name: str) -> dict[str, str]:
+    """Rename all base_app references throughout the codebase. Returns derived names."""
     names = derive_names(name)
 
     print(f"Renaming project to: {names['display']} ({names['snake']})")
@@ -82,19 +84,30 @@ def run(name: str) -> None:
         apply_replacements(filepath, repls, names)
         print(f"  {relpath}")
 
+    return names
+
+
+def create_databases(db_name: str, test_user: str = "test") -> None:
+    """Create the main and test databases, skipping any that already exist."""
+    for cmd in [
+        ["createdb", db_name],
+        ["createdb", "-U", test_user, f"{db_name}_test"],
+    ]:
+        try:
+            subprocess.run(cmd, check=True)
+            print(f"  Created: {cmd[-1]}")
+        except subprocess.CalledProcessError:
+            print(f"  Already exists or failed: {cmd[-1]}")
+
+
+def run(name: str) -> None:
+    names = rename_project(name)
+
     print()
     print(f"Create databases now? (createdb {names['snake']} && createdb -U test {names['snake']}_test)")
     answer = input("[Y/n] ").strip().lower()
     if answer in ("", "y", "yes"):
-        for cmd in [
-            ["createdb", names["snake"]],
-            ["createdb", "-U", "test", f"{names['snake']}_test"],
-        ]:
-            try:
-                subprocess.run(cmd, check=True)
-                print(f"  Created: {cmd[-1]}")
-            except subprocess.CalledProcessError:
-                print(f"  Already exists or failed: {cmd[-1]}")
+        create_databases(names["snake"])
     else:
         print("  Skipped. Create them manually when ready.")
 

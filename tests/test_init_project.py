@@ -9,6 +9,8 @@ from scripts.init_project import (
     validate_name,
     REPLACEMENTS,
     apply_replacements,
+    rename_project,
+    create_databases,
 )
 
 
