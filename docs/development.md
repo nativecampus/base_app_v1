@@ -96,7 +96,7 @@ pipenv run python -m scripts.db_reset --yes
 
 ## Project Structure
 
-```
+```text
 app/
 ├── main.py              # FastAPI app, middleware, router registration
 ├── config.py            # Pydantic settings from environment variables
