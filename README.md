@@ -1,6 +1,6 @@
 # Base App
 
-A project template for Python web applications. Run one command to scaffold a new project with authentication, background jobs, an audit trail, and production deployment — ready to build on.
+A project template for Python web applications. Run one command to scaffold a new project with authentication, background jobs, an audit trail, and production deployment.
 
 ## What's Included
 
@@ -53,6 +53,7 @@ Your app is running at `http://localhost:8000`.
 
 After creating your project:
 
+0. Review the `docs/` directory — architecture, coding standards, data model, API reference, and testing conventions are all documented there
 1. Create a GitHub repository and push your initial commit
 2. Copy `.env.example` to `.env` and fill in your values (see [Environment Variables](#environment-variables))
 3. Set up Auth0 if your app needs authentication (see [Authentication](#authentication))
@@ -62,8 +63,6 @@ After creating your project:
 ```bash
 pipenv run alembic revision --autogenerate -m "initial tables"
 ```
-
-6. Review the `docs/` directory — architecture, coding standards, data model, API reference, and testing conventions are all documented there
 
 ## Authentication
 
