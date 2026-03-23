@@ -1,33 +1,16 @@
 # Development
 
-## Prerequisites
-
-- Python 3.12
-- PostgreSQL 16
-- Node.js (for Tailwind CSS compilation)
-- pipenv
-
 ## Initial Project Setup (from template)
 
-```bash
-curl -sL https://raw.githubusercontent.com/nativecampus/base_app_v1/main/install.sh | bash -s your_project_name
-```
+If you want to use base_app as a template for a new project, see the [README](../README.md). This section is stripped automatically when a project is scaffolded.
 
-This clones the repo, renames all references, installs dependencies, creates databases, runs migrations, builds CSS, and makes an initial commit.
-
-To run just the init step separately (e.g. if you already cloned manually):
-
-```bash
-python manage.py init your_project_name
-```
-
-## Setup
+To set up base_app for template development:
 
 ```bash
 python manage.py setup
 ```
 
-This installs dependencies, creates both the main and test databases, runs migrations, and builds CSS.
+This installs dependencies, creates the `base_app` and `base_app_test` databases, runs migrations, builds CSS, and installs the Claude Wizard skill.
 
 ## Running
 
@@ -37,25 +20,9 @@ Dev server with auto-reload and CSS watcher:
 python manage.py dev
 ```
 
-RQ worker (if using Redis):
-
-```bash
-pipenv run rq worker --url $REDIS_URL base-app
-```
-
-macOS requires SimpleWorker to avoid fork() crashes:
-
-```bash
-pipenv run rq worker --worker-class rq.SimpleWorker --url $REDIS_URL base-app
-```
-
 ## Testing
 
-The test database is created automatically by `manage.py setup` and `manage.py init`. To create it manually:
-
-```bash
-createdb -U test base_app_test
-```
+Test database credentials: `test:test` on `localhost:5432/base_app_test`.
 
 Run tests:
 
@@ -69,7 +36,11 @@ Verbose output:
 pipenv run python -m pytest -v
 ```
 
-Test database credentials: `test:test` on `localhost:5432/base_app_test`.
+Filter by name:
+
+```bash
+pipenv run python -m pytest -k name
+```
 
 ## Database Migrations
 
@@ -123,24 +94,43 @@ Skip confirmation:
 pipenv run python -m scripts.db_reset --yes
 ```
 
-## Authentication (Auth0)
+## Project Structure
 
-Auth is disabled by default. To enable:
-
-1. Create an Auth0 application (Regular Web Application)
-2. Set the callback URL to `http://localhost:8000/auth/callback`
-3. Set the logout URL to `http://localhost:8000`
-4. Add the following to `.env`:
-
-```dotenv
-AUTH_ENABLED=TRUE
-AUTH0_DOMAIN=your-tenant.auth0.com
-AUTH0_CLIENT_ID=your-client-id
-AUTH0_CLIENT_SECRET=your-client-secret
-AUTH0_SECRET_KEY=a-random-secret-for-session-cookies
+```text
+app/
+├── main.py              # FastAPI app, middleware, router registration
+├── config.py            # Pydantic settings from environment variables
+├── database.py          # Async SQLAlchemy engine and session management
+├── dependencies.py      # FastAPI dependencies (auth, etc.)
+├── enums.py             # Shared enum definitions
+├── worker.py            # Redis/RQ queue helpers (optional)
+├── tasks.py             # Synchronous RQ task wrappers
+├── templating.py        # Jinja2 environment, globals, filters
+├── models/              # SQLAlchemy ORM models
+├── schemas/             # Pydantic request/response schemas
+├── services/            # Business logic layer
+├── routers/             # HTTP endpoint handlers
+├── static/css/          # Tailwind input and compiled CSS
+└── templates/           # Jinja2 HTML templates
+alembic/                 # Database migrations
+scripts/                 # Utility scripts (db reset, seeding)
+tests/                   # Pytest test suite
+docs/                    # Project documentation
 ```
 
-When enabled, unauthenticated requests to protected routes redirect to `/auth/login`. Audit trail columns (`created_by`, `updated_by`) use the authenticated user's `email`, falling back to `name`, then `CURRENT_USER` if neither is available.
+## RQ Worker
+
+If using Redis for background jobs:
+
+```bash
+pipenv run rq worker --url $REDIS_URL base-app
+```
+
+macOS requires SimpleWorker to avoid fork() crashes:
+
+```bash
+pipenv run rq worker --worker-class rq.SimpleWorker --url $REDIS_URL base-app
+```
 
 ## Deployment
 
